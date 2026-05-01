@@ -117,3 +117,13 @@ button {
   display: flex;
   align-items: center;
 }
+
+.chart-container{
+  height:35%;
+  width: 35%;
+  background: rgba(124, 58, 237, 0.12);
+  border-radius: 30px;
+  font-family:'Poppins', sans-serif; 
+  font-weight: 700;
+  padding:30px
+}

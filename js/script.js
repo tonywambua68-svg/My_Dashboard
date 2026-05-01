@@ -1,3 +1,22 @@
+let completedHabits = 0
+const totalHabits = 4
+
+function toggleHabit(button){
+    const circle = button.querySelector('.circle')
+    if(circle.classList.contains('done')){
+        circle.classList.remove('done')      // empty the circle
+        button.classList.remove('completed') // remove strikethrough
+         completedHabits--   
+    }
+    else{
+        circle.classList.add('done')      // fill circle with purple
+        button.classList.add('completed') // add strikethrough
+        completedHabits++ 
+    }
+     document.getElementById('habitCount').textContent = completedHabits + '/' + totalHabits
+}
+
+
 const ctx = document.getElementById('weeklyChart')
 
 new Chart(ctx, {
@@ -7,9 +26,12 @@ new Chart(ctx, {
     datasets: [{
       label: 'Weekly Progress',
       data: [5, 8, 3, 9, 6, 7, 4],
-      backgroundColor: '#7c3aed',
-      borderRadius: 8,
-      borderWidth: 1
+      borderColor: '#7c3aed',
+      backgroundColor: '#7c3aed33',
+      borderWidth: 2,
+      pointBackgroundColor: '#a855f7',
+      pointRadius: 5,
+      tension: 0.4
     }]
   },
   options: {
@@ -26,3 +48,4 @@ new Chart(ctx, {
     }
   }
 })
+
