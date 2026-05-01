@@ -1,0 +1,119 @@
+h1 {
+  color: #a855f7;
+  margin-bottom: 10px;
+  justify-content: center;
+  margin-left: 30px;
+  
+}
+
+button {
+  width: 100%;
+  padding: 14px 18px;
+  margin: 10px 0;
+  border-radius: 16px;
+  background: #7C3AED;
+  color: #FFFFFF;
+  border: none;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.daily-habits,
+.today-task {
+  box-sizing: border-box;
+  width: 48%;
+  float: left;
+  margin: 0 1% 20px;
+  padding: 20px;
+  background: rgba(124, 58, 237, 0.12);
+  border-radius: 18px;
+  margin-top: 40px;
+}
+
+.today-task {
+  float: right;
+}
+
+.app-background > div::after {
+  content: "";
+  display: table;
+  clear: both;
+  
+}
+
+.track{
+  margin-top: 10px;
+  margin-left: 30px;
+}
+
+.container {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  margin-left: 30px;
+}
+
+.daily-habits {
+  float: left;
+  width: 48%;
+  padding: 15px; 
+  background: rgba(124, 58, 237, 0.15);
+  border-radius: 20px;
+  box-sizing: border-box;
+  margin-bottom: 20px; 
+  
+}
+
+.today-task {
+  float: right;
+  width: 30%;
+  padding: 20px; 
+  background: rgba(124, 58, 237, 0.15);
+  border-radius: 20px;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+  margin-right:350px ;
+}
+
+.app-background > div > div:last-child {
+  clear: both;
+}
+
+.app-background {
+  background-color:#0f0a1a;
+  font-family: 'Poppins', sans-serif;
+  color: #e9d5ff;
+}
+.habits, .tasks, .streak, .week{
+  padding: 40px;
+  width: 15%;
+  height: 15%;
+}
+.stat-label {
+  font-size: 13px;
+  color: #e9d5ff;
+}
+
+.stat-num {
+  font-size: 28px;
+  font-weight: 500;
+  color: #ffffff;
+  margin-top: 8px;
+}
+
+.circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #a855f7;
+  display: inline-block;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.role {
+  display: flex;
+  align-items: center;
+}

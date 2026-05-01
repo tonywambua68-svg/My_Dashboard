@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang ="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/style.css">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+        <title>Personal Tracker</title>
+    </head>
+    <body class="app-background">
+        <header>
+        <h1>Personal Tracker</h1>
+        <p class="track">track your daily habits and goals</p>
+    </header>
+    <div>
+            <div class="container">
+                <button class="habits">
+                    <p class="stat-lebal">Habits Today</p>
+                    <p class="stat-num">0/5</p>
+                </button>
+                <button class="tasks">
+                    <P class="stat-lebal">Tasks Done</P>
+                    <p class="stat-num">0/5</p>
+                </button>
+                <button class="streak">
+                    <p class="stat-lebal">Total Streak</p>
+                    <p class="stat-num">0/5</p>
+                </button>
+                <button class="week">
+                    <p class="stat-lebal">This Week</p>
+                    <p class="stat-num">0/5</p>
+                </button>
+            </div>
+        <div class="daily-habits">
+             <h2> Daily Habits</h2>
+                <button class="btn" ><span class="circle"></span>Morning Exercise</button>
+                <button class="btn"><span class="circle"></span>Read for 30mins</button>
+                <button class="btn"><span class="circle"></span>Drink 8 glasses of water</button>
+                <button class="btn"><span class="circle"></span>Meditatae</button>
+        </div>
+        <div class="today-task">
+            <h3> Today's Tasks</h3>
+            <button class="role"><span class="circle"></span>Review project  proposals</button>
+            <button class="role"><span class="circle"></span>schedule dentist appointment</button>
+            <button class="role"><span class="circle"></span> update portfolio website</button>
+            <button class="role"><span class="circle"></span>read book</button>
+        </div>
+        <div>
+            <h4>Weekly Progress</h4>
+            <canvas id="weeklyChart"></canvas>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="js/script.js"></script>
+    </body>
+
+
+</html>
