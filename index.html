@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="css/style.css">
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+        <script src="https://js-de.sentry-cdn.com/c3ba9baacc484a83bdea5be70dd9c7ad.min.js" crossorigin="anonymous"></script>
         <title>Personal Tracker</title>
     </head>
     <body class="app-background">
@@ -14,36 +15,40 @@
     </header>
     <div>
             <div class="container">
-                <button class="habits">
+                <button class="habits" id="command">
                     <p class="stat-lebal">Habits Today</p>
-                    <p class="stat-num" id="habitCount">0/4</p>
+                    <p class="stat-num" id="habitCount">0/0</p>
                 </button>
-                <button class="tasks">
+                <button class="tasks" id="command">
                     <P class="stat-lebal">Tasks Done</P>
-                    <p class="stat-num" id="habitCount">0/4</p>
+                    <p class="stat-num" id="taskCount">0/0</p>
                 </button>
-                <button class="streak">
+                <button class="streak" id="command">
                     <p class="stat-lebal" >Total Streak</p>
-                    <p class="stat-num" id="habitCount">0/4</p>
+                    <p class="stat-num" id="streakCount">0</p>
                 </button>
-                <button class="week">
+                <button class="week" id="command">
                     <p class="stat-lebal">This Week</p>
-                    <p class="stat-num" id="habitCount">0/4</p>
+                    <p class="stat-num" id="weekCount">0</p>
                 </button>
             </div>
-        <div class="daily-habits">
+        <div class="daily-habits" id="habitList">
              <h2> Daily Habits</h2>
-                <button class="btn" onclick="toggleHabit(this)"><span class="circle"></span>Morning Exercise</button>
-                <button class="btn" onclick="toggleHabit(this)"><span class="circle"></span>Read for 30mins</button>
-                <button class="btn" onclick="toggleHabit(this)"><span class="circle"></span>Drink 8 glasses of water</button>
-                <button class="btn" onclick="toggleHabit(this)"><span class="circle"></span>Meditatae</button>
+             <div class="add-habit">  
+           <input type="text" id="habitInput" placeholder="Add new habit..." autocomplete="off" />
+            <button id="modern-button" onclick="addHabit()"> Add Habit</button>
+              </div>
+                <button class="btn" onclick="toggleHabit(this)" ondblclick="editHabit(this)"><span class="circle"></span>Morning Exercise</button>
+                <button class="btn" onclick="toggleHabit(this)"ondblclick="editHabit(this)"><span class="circle"></span>Read for 30mins</button>
+                <button class="btn" onclick="toggleHabit(this)"ondblclick="editHabit(this)"><span class="circle"></span>Drink 8 glasses of water</button>
+                <button class="btn" onclick="toggleHabit(this)"ondblclick="editHabit(this)"><span class="circle"></span>Meditate</button>
         </div>
         <div class="today-task">
             <h3> Today's Tasks</h3>
-            <button class="role"><span class="circle"></span>Review project  proposals</button>
-            <button class="role"><span class="circle"></span>schedule dentist appointment</button>
-            <button class="role"><span class="circle"></span> update portfolio website</button>
-            <button class="role"><span class="circle"></span>read book</button>
+            <button class="role" onclick="toggleTask(this)"><span class="circle"></span>Review project  proposals</button>
+            <button class="role" onclick="toggleTask(this)"><span class="circle"></span>schedule dentist appointment</button>
+            <button class="role" onclick="toggleTask(this)"><span class="circle"></span> update portfolio website</button>
+            <button class="role" onclick="toggleTask(this)"><span class="circle"></span>read book</button>
         </div>
         <div class="chart-container">
             <h4>Weekly Progress</h4>
@@ -52,6 +57,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
  <script src="js/script.js"></script>
+ 
      
     </body>
 
