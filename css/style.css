@@ -20,27 +20,29 @@ button {
   font-size: 15px;
 }
 
+.main-sections {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin: 20px 30px;
+}
+
 .daily-habits,
 .today-task {
   box-sizing: border-box;
-  width: 48%;
-  float: left;
-  margin: 0 1% 20px;
+  flex: 1;
+  min-width: 320px;
   padding: 20px;
-  background: rgba(124, 58, 237, 0.12);
-  border-radius: 18px;
-  margin-top: 40px;
-}
-
-.today-task {
-  float: right;
+  background: rgba(124, 58, 237, 0.15);
+  border-radius: 20px;
+  margin-top: 20px;
 }
 
 .app-background > div::after {
   content: "";
   display: table;
   clear: both;
-  
 }
 
 .track{
@@ -55,34 +57,10 @@ button {
   margin-left: 30px;
 }
 
-.daily-habits {
-  float: left;
-  width: 48%;
-  padding: 15px; 
-  background: rgba(124, 58, 237, 0.15);
-  border-radius: 20px;
-  box-sizing: border-box;
-  margin-bottom: 20px; 
-  
-}
-
-.today-task {
-  float: right;
-  width: 30%;
-  padding: 20px; 
-  background: rgba(124, 58, 237, 0.15);
-  border-radius: 20px;
-  box-sizing: border-box;
-  margin-bottom: 20px;
-  margin-right:350px ;
-}
-
-.app-background > div > div:last-child {
-  clear: both;
-}
+/* Use main-sections wrapper for layout; individual section rules are now defined above. */
 
 .app-background {
-  background-color:#0f0a1a;
+  background-color:#0f0a1e ;
   font-family: 'Poppins', sans-serif;
   color: #e9d5ff;
 }
@@ -135,7 +113,7 @@ button {
   text-decoration-thickness: 2px;
 }
 
-.add-habit {
+.add-habit , .add-task {
     display: flex;
     gap: 8px;
     margin-top: 12px;
@@ -143,7 +121,8 @@ button {
     
 }
 
-#habitInput {
+#habitInput , #taskInput
+{
     flex: 1;
     padding: 10px;
     border-radius: 8px;
@@ -170,7 +149,7 @@ button {
     color: #6b7280;
 }
 
-#modern-button{
+.modern-button{
   position: relative;
   display: flex;
   align-items: center;
@@ -189,13 +168,12 @@ button {
   transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-#modern-button:hover {
+.modern-button:hover {
   box-shadow: 0 0 0 12px rgba(124, 58, 237, 0.12);
   color: white;
   border-radius: 12px;
 }
-
-#modern-button:hover .circle {
+.modern-button:hover .circle {
   width: 220px;
   height: 220px;
   opacity: 1;
@@ -209,3 +187,4 @@ button {
     -10px 0px 15px #ffffff,
     5px 15px 15px rgba(0, 0, 0, 0.3);
 }
+ 

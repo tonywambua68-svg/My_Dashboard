@@ -1,109 +1,229 @@
 let completedHabits = 0;
 let completedTasks = 0;
-console.log("completedHabits =", completedHabits);
 let totalTasks = 4;
 let totalHabits = document.querySelectorAll('.btn').length;
-console.log(totalHabits);
+
+// ✅ NEW — load habits from database when page opens
+function loadHabits(){
+    fetch('http://localhost:5000/habits')
+    .then(res => res.json())
+    .then(habits => {
+        const habitList = document.getElementById('habitList');
+        habitList.innerHTML = '';
+        totalHabits = habits.length;
+        completedHabits = 0;
+
+        habits.forEach(habit => {
+            const btn = document.createElement('button');
+            btn.classList.add('btn');
+            btn.innerHTML = `<span class="circle"></span><span class="habit-text">${habit.name}</span>`;
+            btn.setAttribute('onclick', 'toggleHabit(this)');
+            btn.setAttribute('ondblclick', 'editHabit(this)');
+            btn.setAttribute('data-id', habit.id);
+
+            if(habit.completed){
+                btn.classList.add('completed');
+                btn.querySelector('.circle').classList.add('done');
+                completedHabits++;
+            }
+
+            habitList.appendChild(btn);
+        });
+
+        document.getElementById('habitCount').textContent = completedHabits + '/' + totalHabits;
+        updateStats();
+    })
+    .catch(err => {
+        console.log('Error loading habits', err);
+    });
+}
+
+function addTask(){
+    const input = document.getElementById('taskInput');
+    const taskName = input.value.trim();
+
+    if(taskName === ''){
+        alert('please enter a task name');
+        return;
+    }
+
+    fetch('http://localhost:5000/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: taskName })
+    })
+    .then(res => res.json())
+    .then(data => {
+        const taskList = document.getElementById('taskList');
+        const newTask = document.createElement('button');
+        newTask.classList.add('role');
+        newTask.innerHTML = `<span class="circle"></span><span class="task-text">${taskName}</span>`;
+        newTask.setAttribute('onclick', 'toggleTask(this)');
+        newTask.setAttribute('data-id', data.id);
+        taskList.appendChild(newTask);
+        totalTasks++;
+        document.getElementById('taskCount').textContent = completedTasks + '/' + totalTasks;
+        input.value = '';
+    })
+    .catch(err => {
+        console.log('Error adding task', err);
+    });
+}
+  
 
 function toggleHabit(button){
-    const circle = button.querySelector('.circle')
-    if(circle.classList.contains('done')){
-        circle.classList.remove('done')
-        button.classList.remove('completed')
-        completedHabits--
-    }
-    else{
-        circle.classList.add('done')
-        button.classList.add('completed')
-        completedHabits++
-    }
-    document.getElementById('habitCount').textContent = completedHabits + '/' + totalHabits
-    updateStats();
+    const circle = button.querySelector('.circle');
+    const id = button.getAttribute('data-id'); // ✅ NEW — get id from button
 
-  }
-
-function toggleTask(button){
-    const circle = button.querySelector('.circle')
-    
     if(circle.classList.contains('done')){
-        return
+        circle.classList.remove('done');
+        button.classList.remove('completed');
+        completedHabits--;
+
+        // ✅ NEW — save to database
+        fetch(`http://localhost:5000/habits/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                completed: 0,
+                streak: 0,
+                week_count: 0
+            })
+        })
+        .catch(err => console.log('Error updating habit', err));
+
+    } else {
+        circle.classList.add('done');
+        button.classList.add('completed');
+        completedHabits++;
+
+        // ✅ NEW — save to database
+        fetch(`http://localhost:5000/habits/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                completed: 1,
+                streak: 1,
+                week_count: 1
+            })
+        })
+        .catch(err => console.log('Error updating habit', err));
     }
-    
-    circle.classList.add('done')
-    button.classList.add('completed')
-    completedTasks++
-    
-    document.getElementById('taskCount').textContent = completedTasks + '/' + totalTasks
+
+    document.getElementById('habitCount').textContent = completedHabits + '/' + totalHabits;
     updateStats();
 }
-function editHabit(button){
-    const currentText = button.querySelector('.habit-text')
-    const newText = prompt('Edit habit name:', currentText)
-    if(newText !== null && newText.trim() !== ''){
-         habitText.textContent = newText;
+
+function toggleTask(button){
+    const circle = button.querySelector('.circle');
+
+    if(circle.classList.contains('done')){
+        return;
     }
-  
+
+    circle.classList.add('done');
+    button.classList.add('completed');
+    completedTasks++;
+
+    document.getElementById('taskCount').textContent = completedTasks + '/' + totalTasks;
+    updateStats();
+}
+
+// ✅ FIXED editHabit bug
+function editHabit(button){
+    const habitText = button.querySelector('.habit-text');
+    const currentText = habitText.textContent;
+    const newText = prompt('Edit habit name:', currentText);
+
+    if(newText !== null && newText.trim() !== ''){
+        habitText.textContent = newText;
+
+        // ✅ NEW — save to database
+        const id = button.getAttribute('data-id');
+        fetch(`http://localhost:5000/habits/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: newText })
+        })
+        .catch(err => console.log('Error editing habit', err));
+    }
 }
 
 function updateStats(){
-    const today = new Date().getDay()
-    const totalDone = completedHabits + completedTasks
-    document.getElementById('streakCount').textContent = completedHabits
-    document.getElementById('weekCount').textContent = totalDone + ' done'
-    
-    myChart.data.datasets[0].data[today] = totalDone
-    myChart.update()
+    const today = new Date().getDay();
+    const totalDone = completedHabits + completedTasks;
+    document.getElementById('streakCount').textContent = completedHabits;
+    document.getElementById('weekCount').textContent = totalDone + ' done';
+
+    myChart.data.datasets[0].data[today] = totalDone;
+    myChart.update();
 }
 
+// ✅ UPDATED addHabit — saves to database
 function addHabit(){
-const input = document.getElementById('habitInput');
-const habitName = input.value.trim();
-if (habitName === ''){
-  alert ("please enter a habit name");
-  return;
-}
-const habitList = document.getElementById('habitList');
-const newHabit = document.createElement('button');
-newHabit.classList.add('btn');
-newHabit.innerHTML = `<span class="circle"></span> ${habitName}`;
-newHabit.setAttribute('onclick', 'toggleHabit(this)');
-habitList.appendChild(newHabit);
-totalHabits ++;
-document.getElementById('habitCount').textContent = completedHabits + '/' + totalHabits;
-input.value ='';
+    const input = document.getElementById('habitInput');
+    const habitName = input.value.trim();
+
+    if(habitName === ''){
+        alert('please enter a habit name');
+        return;
+    }
+
+    fetch('http://localhost:5000/habits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: habitName })
+    })
+    .then(res => res.json())
+    .then(data => {
+        const habitList = document.getElementById('habitList');
+        const newHabit = document.createElement('button');
+        newHabit.classList.add('btn');
+        newHabit.innerHTML = `<span class="circle"></span><span class="habit-text">${habitName}</span>`;
+        newHabit.setAttribute('onclick', 'toggleHabit(this)');
+        newHabit.setAttribute('ondblclick', 'editHabit(this)');
+        newHabit.setAttribute('data-id', data.id);
+        habitList.appendChild(newHabit);
+        totalHabits++;
+        document.getElementById('habitCount').textContent = completedHabits + '/' + totalHabits;
+        input.value = '';
+    })
+    .catch(err => {
+        console.log('Error adding habit', err);
+    });
 }
 
-
-const ctx = document.getElementById('weeklyChart')
+const ctx = document.getElementById('weeklyChart');
 
 const myChart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-    datasets: [{
-      label: 'Weekly Progress',
-      data: [0, 0, 0, 0, 0, 0, 0],
-      borderColor: '#7c3aed',
-      backgroundColor: '#7c3aed33',
-      borderWidth: 2,
-      pointBackgroundColor: '#a855f7',
-      pointRadius: 5,
-      tension: 0.4
-    }]
-  },
-  options: {
-    plugins: {
-      legend: {
-        labels: {
-          color: '#e9d5ff'
-        }
-      }
+    type: 'line',
+    data: {
+        labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        datasets: [{
+            label: 'Weekly Progress',
+            data: [0, 0, 0, 0, 0, 0, 0],
+            borderColor: '#7c3aed',
+            backgroundColor: '#7c3aed33',
+            borderWidth: 2,
+            pointBackgroundColor: '#a855f7',
+            pointRadius: 5,
+            tension: 0.4
+        }]
     },
-    scales: {
-      x: { ticks: { color: '#e9d5ff' } },
-      y: { ticks: { color: '#e9d5ff' } }
+    options: {
+        plugins: {
+            legend: {
+                labels: {
+                    color: '#e9d5ff'
+                }
+            }
+        },
+        scales: {
+            x: { ticks: { color: '#e9d5ff' } },
+            y: { ticks: { color: '#e9d5ff' } }
+        }
     }
-  }
-})
+});
 
-
+// ✅ NEW — load habits when page opens
+loadHabits();
