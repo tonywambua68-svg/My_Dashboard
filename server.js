@@ -1,6 +1,8 @@
+require('dotenv').config();
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
 const cors = require('cors');
+const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
 
@@ -8,123 +10,97 @@ app.use(cors({
     origin: ['http://localhost:5000', 'http://127.0.0.1:3000']
 }));
 app.use(express.json());
+app.use(express.static(path.join(__dirname)));
 
-const db = new sqlite3.Database('./habits.db', (err) => {
-    if(err){
-        console.log('Error connecting to database', err);
-    } else {
-        console.log('Connected to database');
-    }
-});
-
-db.run(`CREATE TABLE IF NOT EXISTS habits (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    completed BOOLEAN DEFAULT 0,
-    streak INTEGER DEFAULT 0,
-    week_count INTEGER DEFAULT 0,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-)`);
-
-db.run(`CREATE TABLE IF NOT EXISTS tasks (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    completed BOOLEAN DEFAULT 0,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-)`);
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
 
-app.post('/habits', (req, res) => {
+app.post('/habits', async (req, res) => {
     const { name } = req.body;
-    db.run('INSERT INTO habits (name) VALUES (?)', [name], function(err) {
-        if(err){
-            res.status(500).json({ error: 'something went wrong' });
-            return;
-        }
-        res.status(201).json({ id: this.lastID, name: name });
-    });
+    const { data, error } = await supabase.from('habits').insert([{ name }]).select();
+    if(error){
+        res.status(500).json({ error: error.message });
+        return;
+    }
+    res.status(201).json(data[0]);
 });
 
-app.get('/habits', (req, res) => {
-    db.all('SELECT * FROM habits', [], (err, rows) => {
-        if(err){
-            res.status(500).json({ error: 'something went wrong' });
-            return;
-        }
-        res.json(rows);
-    });
+app.get('/habits', async (req, res) => {
+    const { data, error } = await supabase.from('habits').select('*');
+    if(error){
+        res.status(500).json({ error: error.message });
+        return;
+    }
+    res.json(data);
 });
 
-app.put('/habits/:id', (req, res) => {
+app.put('/habits/:id', async (req, res) => {
     const { id } = req.params;
-    const { completed, streak, week_count } = req.body;
-    db.run('UPDATE habits SET completed=?, streak=?, week_count=? WHERE id=?', 
-    [completed, streak, week_count, id], function(err){
-        if(err){
-            res.status(500).json({ error: 'something went wrong' });
-            return;
-        }
-        res.json({ message: 'habit updated' });
-    });
+    const updates = req.body;
+    const { error } = await supabase.from('habits').update(updates).eq('id', id);
+    if(error){
+        res.status(500).json({ error: error.message });
+        return;
+    }
+    res.json({ message: 'habit updated' });
 });
 
-app.delete('/habits/:id', (req, res) => {
+app.delete('/habits/:id', async (req, res) => {
     const { id } = req.params;
-    db.run('DELETE FROM habits WHERE id = ?', [id], function(err) {
-        if(err){
-            res.status(500).json({ error: 'something went wrong' });
-            return;
-        }
-        res.json({ message: 'habit deleted' });
-    });
+    const { error } = await supabase.from('habits').delete().eq('id', id);
+    if(error){
+        res.status(500).json({ error: error.message });
+        return;
+    }
+    res.json({ message: 'habit deleted' });
 });
 
 // GET all tasks
-app.get('/tasks', (req, res) => {
-    db.all('SELECT * FROM tasks', [], (err, rows) => {
-        if(err){
-            res.status(500).json({ error: 'something went wrong' });
-            return;
-        }
-        res.json(rows);
-    });
+app.get('/tasks', async (req, res) => {
+    const { data, error } = await supabase.from('tasks').select('*');
+    if(error){
+        res.status(500).json({ error: error.message });
+        return;
+    }
+    res.json(data);
 });
 
 // POST add task
-app.post('/tasks', (req, res) => {
+app.post('/tasks', async (req, res) => {
     const { name } = req.body;
-    db.run('INSERT INTO tasks (name) VALUES (?)', [name], function(err) {
-        if(err){
-            res.status(500).json({ error: 'something went wrong' });
-            return;
-        }
-        res.status(201).json({ id: this.lastID, name: name });
-    });
+    const { data, error } = await supabase.from('tasks').insert([{ name }]).select();
+    if(error){
+        res.status(500).json({ error: error.message });
+        return;
+    }
+    res.status(201).json(data[0]);
 });
 
 // PUT update task
-app.put('/tasks/:id', (req, res) => {
+app.put('/tasks/:id', async (req, res) => {
     const { id } = req.params;
-    const { completed } = req.body;
-    db.run('UPDATE tasks SET completed=? WHERE id=?', [completed, id], function(err) {
-        if(err){
-            res.status(500).json({ error: 'something went wrong' });
-            return;
-        }
-        res.json({ message: 'task updated' });
-    });
+    const updates = req.body;
+    const { error } = await supabase.from('tasks').update(updates).eq('id', id);
+    if(error){
+        res.status(500).json({ error: error.message });
+        return;
+    }
+    res.json({ message: 'task updated' });
 });
 
 // DELETE task
-app.delete('/tasks/:id', (req, res) => {
+app.delete('/tasks/:id', async (req, res) => {
     const { id } = req.params;
-    db.run('DELETE FROM tasks WHERE id=?', [id], function(err) {
-        if(err){
-            res.status(500).json({ error: 'something went wrong' });
-            return;
-        }
-        res.json({ message: 'task deleted' });
-    });
+    const { error } = await supabase.from('tasks').delete().eq('id', id);
+    if(error){
+        res.status(500).json({ error: error.message });
+        return;
+    }
+    res.json({ message: 'task deleted' });
+});
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;

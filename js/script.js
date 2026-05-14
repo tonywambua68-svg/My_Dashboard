@@ -1,11 +1,12 @@
+const API_URL = window.location.origin;
 let completedHabits = 0;
 let completedTasks = 0;
-let totalTasks = 4;
-let totalHabits = document.querySelectorAll('.btn').length;
+let totalTasks = 0;
+let totalHabits = 0;
 
 // ✅ NEW — load habits from database when page opens
 function loadHabits(){
-    fetch('http://localhost:5000/habits')
+   fetch(`${API_URL}/habits`)
     .then(res => res.json())
     .then(habits => {
         const habitList = document.getElementById('habitList');
@@ -47,7 +48,7 @@ function addTask(){
         return;
     }
 
-    fetch('http://localhost:5000/tasks', {
+    fetch(`${API_URL}/tasks`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: taskName })
@@ -69,6 +70,37 @@ function addTask(){
         console.log('Error adding task', err);
     });
 }
+
+function loadTasks(){
+    fetch(`${API_URL}/tasks`)
+    .then(res => res.json())
+    .then(tasks => {
+        const taskList = document.getElementById('taskList');
+        taskList.innerHTML = '';
+        totalTasks = tasks.length;
+        completedTasks = 0;
+
+        tasks.forEach(task => {
+            const newTask = document.createElement('button');
+            newTask.classList.add('role');
+            newTask.innerHTML = `<span class="circle"></span><span class="task-text">${task.name}</span>`;
+            newTask.setAttribute('onclick', 'toggleTask(this)');
+            newTask.setAttribute('data-id', task.id);
+            if(task.completed){
+                newTask.classList.add('completed');
+                newTask.querySelector('.circle').classList.add('done');
+                completedTasks++;
+            }
+            taskList.appendChild(newTask);
+        });
+
+        document.getElementById('taskCount').textContent = completedTasks + '/' + totalTasks;
+        updateStats();
+    })
+    .catch(err => {
+        console.log('Error loading tasks', err);
+    });
+}
   
 
 function toggleHabit(button){
@@ -81,7 +113,7 @@ function toggleHabit(button){
         completedHabits--;
 
         // ✅ NEW — save to database
-        fetch(`http://localhost:5000/habits/${id}`, {
+        fetch(`${API_URL}/habits/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -98,7 +130,7 @@ function toggleHabit(button){
         completedHabits++;
 
         // ✅ NEW — save to database
-        fetch(`http://localhost:5000/habits/${id}`, {
+        fetch(`${API_URL}/habits/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -116,6 +148,7 @@ function toggleHabit(button){
 
 function toggleTask(button){
     const circle = button.querySelector('.circle');
+    const id = button.getAttribute('data-id');
 
     if(circle.classList.contains('done')){
         return;
@@ -124,6 +157,13 @@ function toggleTask(button){
     circle.classList.add('done');
     button.classList.add('completed');
     completedTasks++;
+
+    fetch(`${API_URL}/tasks/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed: 1 })
+    })
+    .catch(err => console.log('Error updating task', err));
 
     document.getElementById('taskCount').textContent = completedTasks + '/' + totalTasks;
     updateStats();
@@ -140,7 +180,7 @@ function editHabit(button){
 
         // ✅ NEW — save to database
         const id = button.getAttribute('data-id');
-        fetch(`http://localhost:5000/habits/${id}`, {
+        fetch(`${API_URL}/habits/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: newText })
@@ -169,7 +209,7 @@ function addHabit(){
         return;
     }
 
-    fetch('http://localhost:5000/habits', {
+    fetch(`${API_URL}/habits`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: habitName })
@@ -227,3 +267,4 @@ const myChart = new Chart(ctx, {
 
 // ✅ NEW — load habits when page opens
 loadHabits();
+loadTasks();
