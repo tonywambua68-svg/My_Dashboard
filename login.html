@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Personal Tracker</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+    <div class="login-container">
+
+        <h1>Personal Tracker</h1>
+        <p>Track your daily habits and goals</p>
+
+        <div class="login-box">
+
+            <h2>Welcome Back</h2>
+
+            <input type="email" id="email" placeholder="Email" />
+            <input type="password" id="password" placeholder="Password" />
+
+            <button id="loginBtn" onclick="login()">Login</button>
+            <button id="signupBtn" onclick="signUp()">Sign Up</button>
+
+            <div class="divider">or</div>
+
+            <button id="googleBtn" onclick="googleLogin()">
+                Login with Google
+            </button>
+
+            <p id="message"></p>
+
+        </div>
+    </div>
+
+    <script src="login.js"></script>
+</body>
+</html>
